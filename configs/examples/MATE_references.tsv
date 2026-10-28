@@ -1,0 +1,7 @@
+tree_id	species	gene_id	protein_accession	family	functional_context	evidence_type	evidence_level	use_as_bait	reference	notes
+MaMATE11	Muscari_aucheri		XAW38667.1	MATE	anthocyanin	direct_transport	direct	yes	10.1093/hr/uhaf270	Tonoplast-localized; transports flavonoids with preference for malonylated anthocyanins
+MaMATE14	Muscari_aucheri		XAW38668.1	MATE	anthocyanin	direct_transport	direct	yes	10.1093/hr/uhaf270	Tonoplast-localized; transports flavonoids with preference for malonylated anthocyanins
+MtMATE2	Medicago_truncatula		ADV04045.1	MATE	anthocyanin	direct_transport	direct	yes	10.1105/tpc.110.080804	Vacuolar transporter with high capacity for anthocyanins and malonylated flavonoid glycosides
+TT12	Arabidopsis_thaliana		NP_191462.1	MATE	proanthocyanidin_flavonoid	direct_transport	direct	yes	10.1105/tpc.106.046029	Vacuolar flavonoid/H+ antiporter; primarily associated with seed-coat proanthocyanidin accumulation
+VvAM1	Vitis_vinifera		NP_001290007.1	MATE	anthocyanin	direct_transport	direct	yes	10.1104/pp.109.135624	Tonoplast H+-dependent transporter of acylated anthocyanins
+VvAM3	Vitis_vinifera		NP_001268037.1	MATE	anthocyanin	direct_transport	direct	yes	10.1104/pp.109.135624	Tonoplast H+-dependent transporter of acylated anthocyanins

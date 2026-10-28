@@ -1,0 +1,10 @@
+tree_id	species	gene_id	protein_accession	family	functional_context	evidence_type	evidence_level	use_as_bait	reference	notes
+ZmMRP3	Zea_mays		AAT37905.1	ABCC	anthocyanin	genetic_regulatory	strong	yes	10.1105/tpc.022574	anthocyanin-associated; R/C1-regulated
+ZmMRP4	Zea_mays		NP_001106060.1	ABCC	anthocyanin	regulatory_indirect	supporting	yes	10.1105/tpc.022574	indirect anthocyanin evidence; aleurone-associated
+AtABCC1	Arabidopsis_thaliana		NP_001031116.1	ABCC	anthocyanin	direct_transport	direct	yes	10.1111/ppl.13780	MgATP-dependent vacuolar transport of acylated anthocyanins
+AtABCC2	Arabidopsis_thaliana		NP_001189675.1	ABCC	anthocyanin	direct_transport	direct	yes	10.1038/s41598-018-37504-8	C3G/flavonoid transport; GSH cotransport
+AtABCC14	Arabidopsis_thaliana		NP_191829.1	ABCC	anthocyanin	biochemical	strong	yes	10.1111/ppl.13780	MgATP-dependent uptake of acylated anthocyanins; historical MRP10 nomenclature
+VvABCC1	Vitis_vinifera		NP_001290005.1	ABCC	anthocyanin	direct_transport	direct	yes	10.1105/tpc.112.102152	ATP/GSH-dependent anthocyanidin-3-O-glucoside transport
+OsMRP15	Oryza_sativa		XP_015644499.1	ABCC	anthocyanin	genetic	strong	yes	10.1093/nsr/nwaf497	review exact transport evidence during final curation
+PpABCC1	Prunus_persica	Prupe.4G088500	Prupe.4G088500.1	ABCC	anthocyanin	genetic_regulatory	strong	yes	10.3390/ijms24031931	Representative protein model; .1 and .4 encode identical 1631-aa proteins; overexpression and VIGS affect anthocyanin accumulation; promoter activated by PpMYB10.1
+FvABCC8	Fragaria_vesca	FvH4_4g10780	FvH4_4g10780.t1	ABCC	anthocyanin	genetic_regulatory	strong	yes	10.1016/j.plaphy.2023.108037	Hawaii 4 reference-genome homolog used as bait; 1506 aa after removal of terminal stop symbol; 97.55% similar to experimentally characterized FvABCC8

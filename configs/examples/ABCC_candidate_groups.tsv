@@ -1,0 +1,6 @@
+clade_id	anchors	color	label
+ABCC_C1	AtABCC1;AtABCC2;PpABCC1;Amborella_trichopoda.NCBI_lcl_KI395040.1_cds_ERM99159.1_21400	#7B2CBF	AtABCC1/2-PpABCC1 candidate lineage
+ABCC_C2	OsMRP15;ZmMRP3;VvABCC1;Amborella_trichopoda.NCBI_lcl_KI394012.1_cds_ERN05039.1_15538	#9C4DCC	VvABCC1-ZmMRP3-OsMRP15 candidate lineage
+ABCC_C3	ZmMRP4;Amborella_trichopoda.NCBI_lcl_KI392495.1_cds_ERN15836.1_4868	#B565D9	ZmMRP4 candidate lineage
+ABCC_C4	FvABCC8;Amborella_trichopoda.NCBI_lcl_KI394757.1_cds_ERN01708.1_19086	#C77DFF	FvABCC8 candidate lineage
+ABCC_C5	AtABCC14;Amborella_trichopoda.NCBI_lcl_KI394661.1_cds_ERN02231.1_18735	#E0AAFF	AtABCC14 candidate lineage

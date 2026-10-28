@@ -1,0 +1,8 @@
+tree_id	species	gene_id	protein_accession	family	functional_context	evidence_type	evidence_level	use_as_bait	reference	notes
+AtAHA10	Arabidopsis_thaliana	AHA10/TT13	NP_173169.2	P3A	proanthocyanidin_flavonoid	tonoplast_proton_pump	direct	yes	10.1111/tpj.12854	Tonoplast P3A-ATPase required for vacuolar deposition of PA precursors; provides proton motive force for TT12
+GmPH5	Glycine_max	Glyma.03G262600	QQW38885.1	P3A	vacuolar_acidification	genetic_functional	strong	yes	10.3389/fpls.2020.580085	Controls vacuolar acidification and flower coloration in soybean
+PhPH5	Petunia_hybrida	PH5	ABI98399.1	P3A	anthocyanin_vacuolar_pH	tonoplast_proton_pump	direct	yes	10.1038/ncb1805	Tonoplast P3A H+-ATPase; mutation increases vacuolar pH and alters anthocyanin-dependent flower color
+MtAHA5	Medicago_truncatula	Medtr2g036650.1		P3A	proanthocyanidin_flavonoid	tonoplast_proton_pump	direct	yes	10.1016/j.ijbiomac.2025.139508	Tonoplast-localized AHA5; complements Arabidopsis aha10 and provides proton gradient supporting MATE1-mediated PA precursor transport
+VvPH5	Vitis_vinifera	GSVIVT01016652001		P3A	vacuolar_acidification	functional_complementation	strong	yes	10.1111/nph.14008	Experimental PH5 homolog; restores petunia ph5 phenotype and localizes to tonoplast
+DcPH5	Dianthus_caryophyllus			P3A	vacuolar_acidification	functional_complementation	strong	yes	10.1111/nph.14008	Experimental PH5 homolog; restores petunia ph5 phenotype and localizes to tonoplast
+RhPH5	Rosa_hybrida			P3A	vacuolar_acidification	functional_complementation	strong	yes	10.1111/nph.14008	Experimental PH5 homolog; restores petunia ph5 phenotype and localizes to tonoplast
