@@ -1,8 +1,8 @@
-# Current transporter phylogeny workflow
+# Transporter phylogeny workflow
 
-This is a clean copy of the workflow currently used for the ABCC, MATE and P3A transporter analyses.
+This is a clean copy of the workflow that I am currently using for the ABCC, MATE and P3A transporter analyses.
 
-It is being shared so the current scripts can be inspected and a later decision can be made about whether reusable parts should be incorporated into KIPEs or kept as a separate workflow. This folder is not a finished software package.
+It is being shared so the current scripts can be inspected.
 
 ## What is automated
 
