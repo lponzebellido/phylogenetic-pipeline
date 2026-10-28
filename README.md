@@ -1,275 +1,145 @@
-# Phylogenetic pipeline
+# Current transporter phylogeny workflow
 
-This pipeline searches a plant proteome collection with characterized reference proteins, builds broad phylogenetic trees and prepares evidence for manually defining candidate lineages.
+This is a clean copy of the workflow currently used for the ABCC, MATE and P3A transporter analyses.
 
-This repository is not presented as production-ready software. It is a traceable snapshot for lab review and for deciding whether the workflow should remain standalone or whether generic parts should later be integrated into KIPEs.
+It is being shared so the current scripts can be inspected and a later decision can be made about whether reusable parts should be incorporated into KIPEs or kept as a separate workflow. This folder is not a finished software package.
 
-The active ABCC, MATE and P3A analysis directories are not part of this repository and were not modified while preparing it.
+## What is automated
 
-## What the pipeline does
+`run_phylogeny.sh` runs these steps:
 
-For one transporter family, the workflow:
+1. search each plant proteome with the bait proteins using BLASTp;
+2. retain the best homologues that pass the current filters;
+3. combine the selected proteins and bait sequences;
+4. normalize FASTA identifiers and write QC tables;
+5. align the proteins with MAFFT;
+6. trim the alignment;
+7. build a FastTree tree;
+8. build an IQ-TREE tree;
+9. validate sequence and tree contents;
+10. prepare the basic reference and Amborella files for iTOL.
 
-1. checks the family directory and creates blank metadata files;
-2. searches each plant proteome with the reference proteins using BLASTp;
-3. retains up to 10 hits per bait and species after the current identity and alignment-length filters;
-4. combines and normalizes the selected proteins and reference sequences;
-5. aligns the proteins with MAFFT;
-6. trims low-occupancy alignment columns;
-7. builds FastTree and IQ-TREE trees;
-8. validates sequence counts, identifiers and tree membership;
-9. creates reference and Amborella annotations for iTOL;
-10. reports the phylogenetic neighborhoods around characterized references;
-11. pauses for a manual candidate-group decision;
-12. extracts the accepted edge splits, creates a visualization-only tree and prepares final iTOL files.
+The current parameters are kept in `run_phylogeny.sh`:
 
-The current stage order is:
+- up to 10 hits per bait and species;
+- minimum identity of 30%;
+- minimum alignment length of 30 amino acids;
+- BLASTp e-value of 0.001;
+- FastTree with `-lg -gamma`;
+- IQ-TREE with `LG+G`.
+
+## What is still manual
+
+After the main tree is built, the characterized references must be inspected manually.
+
+The additional scripts can be used to:
+
+- inspect the closest tree sequences around each reference;
+- compare references with Amborella sequences;
+- define candidate groups in `metadata/FAMILY_candidate_groups.tsv`;
+- extract the selected candidate splits;
+- check that the selected groups do not overlap;
+- prepare a rerooted tree for visualization.
+
+These steps require scientific judgment. The scripts do not decide which candidate groups are biologically correct.
+
+The four scripts used for this part were developed during the ABCC analysis:
 
 ```text
-init -> hits -> dataset -> alignment -> trim -> fasttree -> iqtree -> validate
-     -> itol-base -> neighborhoods -> candidate-splits -> candidate-view
-     -> itol-final -> report
+scripts/inspect_bait_neighborhood.py
+scripts/find_amborella_anchors.py
+scripts/find_candidate_splits.py
+scripts/prepare_candidate_view.py
 ```
 
-## Current scientific settings
-
-The review copy preserves the settings used in the current analyses:
-
-- BLASTp e-value: `0.001`
-- minimum identity: `30%`
-- minimum alignment length: `30` amino acids
-- selected hits: up to `10` per bait and species
-- BLAST does not use `--max_target_seqs`
-- trimming occupancy: `0.1`, meaning columns with more than 90% gaps are removed
-- FastTree: `-lg -gamma`
-- IQ-TREE model: `LG+G`
-
-The pipeline does not currently request IQ-TREE bootstrap or SH-aLRT support. Changing models, thresholds, hit selection or support calculations requires a separate scientific decision and was deliberately not done while preparing this repository.
+MATE and P3A had not yet received accepted candidate-group tables when this clean copy was prepared.
 
 ## Required software
 
-The Python code was reviewed with Python 3.12 and requires:
-
-```text
-biopython==1.88
-```
-
-The full workflow also needs these programs on `PATH`:
-
+- Python 3
+- Biopython
 - NCBI BLAST+ (`blastp` and `makeblastdb`)
 - MAFFT
 - FastTree
 - IQ-TREE 2 (`iqtree2`)
 
-Create a local environment with:
+The current shell script uses `/vol/tests/test1/FastTree` as its default FastTree location. This can be replaced without editing the script by setting `FASTTREE_BIN` when the analysis is started.
+
+## Required input
+
+For a family called `FAMILY`, provide:
+
+```text
+baits/FAMILY_baits.fasta
+metadata/FAMILY_references.tsv
+/path/to/plant_proteomes/
+```
+
+The proteome directory must contain one protein FASTA per species. The accepted extensions are `.fasta`, `.fa` and `.faa`, including uppercase variants.
+
+`metadata/FAMILY_references.tsv` describes the characterized proteins and their evidence. A header-only template is included. Examples from ABCC, MATE and P3A are available in `metadata_examples/`.
+
+## Starting another family
+
+Copy this folder to the location where the new analysis should run. Replace `FAMILY` with the real family name.
+
+Prepare the bait FASTA:
+
+```text
+baits/FAMILY_baits.fasta
+```
+
+Copy and rename the metadata template:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+cp metadata/FAMILY_references.tsv metadata/NEWFAMILY_references.tsv
 ```
 
-If the FastTree executable is not named `FastTree` or is not on `PATH`, pass `--fasttree-bin /path/to/FastTree` or set `FASTTREE_BIN`.
-
-## Required inputs
-
-### Reference FASTA
-
-Each analysis needs one protein FASTA containing the characterized bait sequences:
-
-```text
-FAMILY/baits/FAMILY_baits.fasta
-```
-
-FASTA identifiers must be unique. The actual ABCC, MATE and P3A sequences are intentionally not included in this review repository; see [references/README.md](references/README.md).
-
-### Reference metadata
-
-The required table is:
-
-```text
-FAMILY/metadata/FAMILY_references.tsv
-```
-
-It has these columns:
-
-```text
-tree_id species gene_id protein_accession family functional_context evidence_type evidence_level use_as_bait reference notes
-```
-
-`tree_id` must match the bait identifier as it appears in the normalized tree. `family` must match the value passed to `--family`. Rows used as functional references must have `use_as_bait` set to `yes`.
-
-### Plant proteomes
-
-`--proteomes` must point to a directory containing one protein FASTA per species. Supported filename extensions are `.fasta`, `.fa` and `.faa`, including uppercase variants.
-
-The legacy homolog-collection script uses the part of each filename before the first period as the species/dataset directory name. Those prefixes therefore need to be unique.
-
-The 260-species plant proteome collection used for ABCC, MATE and P3A is external and is not included in Git.
-
-### Candidate groups
-
-After reviewing the neighborhood reports, create or edit:
-
-```text
-FAMILY/metadata/FAMILY_candidate_groups.tsv
-```
-
-The columns are:
-
-```text
-clade_id anchors color label
-```
-
-`anchors` is a semicolon-separated list of reference and/or candidate tree IDs. This file is a manual, auditable scientific decision. The software checks the chosen splits for missing anchors and overlap, but it does not decide which lineages are biologically valid.
-
-## Start a new family
-
-The commands below use `XYZ` as a placeholder.
-
-Create the blank family structure:
+Complete the reference rows, then start the analysis from the project folder:
 
 ```bash
-python run_family.py --family XYZ --workdir /data/analyses/XYZ --stage init
+nohup ./run_phylogeny.sh NEWFAMILY baits/NEWFAMILY_baits.fasta /path/to/plant_proteomes > NEWFAMILY_full_run.log 2>&1 &
 ```
 
-This creates the result directories and these two header-only files:
-
-```text
-/data/analyses/XYZ/metadata/XYZ_references.tsv
-/data/analyses/XYZ/metadata/XYZ_candidate_groups.tsv
-```
-
-Next:
-
-1. copy the reference proteins to `/data/analyses/XYZ/baits/XYZ_baits.fasta`;
-2. complete `XYZ_references.tsv`;
-3. keep `XYZ_candidate_groups.tsv` header-only for now;
-4. check that the proteome directory contains the expected FASTA files.
-
-Run through the neighborhood decision point:
+If FastTree is somewhere else:
 
 ```bash
-python run_family.py --family XYZ --family-dir /data/analyses/XYZ --proteomes /data/proteomes --threads 28 --to-stage neighborhoods --resume
+FASTTREE_BIN=/path/to/FastTree nohup ./run_phylogeny.sh NEWFAMILY baits/NEWFAMILY_baits.fasta /path/to/plant_proteomes > NEWFAMILY_full_run.log 2>&1 &
 ```
 
-Inspect the files in `results/qc/`, especially:
-
-```text
-XYZ_reference_pairs.tsv
-XYZ_reference_amborella.tsv
-XYZ_reference_neighborhoods.tsv
-XYZ_candidate_decision_report.md
-```
-
-After manually completing `metadata/XYZ_candidate_groups.tsv`, continue with:
+Follow the run with:
 
 ```bash
-python run_family.py --family XYZ --family-dir /data/analyses/XYZ --proteomes /data/proteomes --threads 28 --from-stage candidate-splits --resume
+tail -f NEWFAMILY_full_run.log
 ```
 
-For long VM jobs, the same command can be started with `nohup` and monitored through its log. Do not launch a second copy while the first is still running.
+The script recreates `results/hits/` unless `REUSE_HITS=1` is set. Check that another run is not active before starting it again.
 
-## Resume and provenance behavior
-
-`--resume` skips a stage only when its manifest record, input fingerprint, parameters and expected outputs still match.
-
-Existing expensive output is not silently overwritten. For a legacy analysis, `--adopt-existing` validates compatible output and records it in the manifest. Use `--force` only for an intentional rerun.
-
-The manifest is written to:
-
-```text
-FAMILY/results/qc/FAMILY_pipeline_manifest.json
-```
-
-External commands are recorded in:
-
-```text
-FAMILY/logs/FAMILY_pipeline_commands.log
-```
-
-## Family directory layout
-
-```text
-FAMILY/
-|-- baits/
-|   `-- FAMILY_baits.fasta
-|-- metadata/
-|   |-- FAMILY_references.tsv
-|   |-- FAMILY_candidate_groups.tsv
-|   `-- FAMILY_candidate_clades.tsv              generated later
-|-- logs/                                        generated
-|-- archive/                                     generated when output is replaced
-`-- results/                                     generated
-    |-- hits/
-    |-- dataset/
-    |-- alignment/
-    |-- trees/
-    |-- qc/
-    |-- itol/
-    `-- clades/
-```
-
-Family work directories can live outside this repository, which is recommended for large analyses.
-
-## Main outputs
-
-- selected homologues and normalized identifier mapping;
-- combined candidate/reference FASTA;
-- raw and trimmed alignments;
-- FastTree and IQ-TREE trees;
-- dataset and tree validation summaries;
-- reference-pair, Amborella and nearest-neighbor tables;
-- accepted candidate-split membership lists;
-- a visualization-only candidate-view tree;
-- iTOL reference, Amborella and candidate-lineage annotations;
-- a stage manifest and short pipeline report.
-
-The original IQ-TREE tree remains the primary inferred tree. The candidate-view tree is rerooted only to display the accepted splits clearly; its root has no biological interpretation.
-
-## Manual steps that remain
-
-The workflow does not automate:
-
-- choosing and checking characterized reference proteins;
-- curating evidence fields in the reference metadata;
-- deciding whether references define one or several candidate lineages;
-- completing `FAMILY_candidate_groups.tsv`;
-- interpreting taxonomic composition or functional relevance;
-- selecting focused follow-up trees or wet-lab candidates;
-- uploading and styling files in iTOL.
-
-These are documented as manual steps because they require biological judgment.
-
-
-## Examples and tests
-
-`configs/template/` contains blank metadata schemas. `configs/examples/` contains small metadata examples from the initial ABCC, MATE and P3A use cases. No protein sequences or generated trees are included.
-
-Run the standalone tests with:
+When the tree has been inspected and candidate groups are ready to be defined, copy the second template:
 
 ```bash
-python -m unittest discover -s tests -v
+cp metadata/FAMILY_candidate_groups.tsv metadata/NEWFAMILY_candidate_groups.tsv
 ```
 
-The root-independent split tests and initialization test need no external dataset or phylogeny programs. The ABCC integration test is skipped unless an external analysis root is supplied:
+## Generated output
 
-```bash
-PHYLOGENY_PROJECT_ROOT=/path/to/analysis/root python -m unittest tests.test_abcc_integration -v
+The main generated directories are:
+
+```text
+results/hits/        BLAST databases, raw searches and selected sequences
+results/dataset/     combined candidate and reference FASTA files
+results/alignment/   MAFFT and trimmed alignments
+results/trees/       FastTree and IQ-TREE files
+results/qc/          mappings, selected-hit tables and validation output
+results/itol/        iTOL annotation files
+results/clades/      candidate members after manual group definition
 ```
 
-A full end-to-end example is not bundled because the real workflow requires external proteomes and all phylogeny executables. See [examples/README.md](examples/README.md) for the safe review example.
+Generated results, comprehensive proteomes, alignments, trees, logs and BLAST databases are intentionally not included in this clean copy.
 
-## Current project-specific assumptions
+## Files in this copy
 
-Some parts are reusable but not yet fully generic:
-
-- Amborella sequences receive a dedicated taxonomic annotation;
-- evidence levels and iTOL colors follow the current transporter project;
-- the input is a directory of one proteome FASTA per species;
-- the legacy BLAST script derives a species label from the filename prefix;
-- candidate groups are represented as tree edge splits defined by anchors;
-- default models, filters and hit counts come from ABCC, MATE and P3A;
-- the ABCC regression test needs external ABCC results.
-
-These assumptions are candidates for later review, not silent refactoring.
+- `run_phylogeny.sh` and the six common scripts were identical in ABCC, MATE and P3A.
+- The four candidate-inspection scripts were copied from ABCC without modification.
+- `metadata_examples/` contains only the small reference tables and the accepted ABCC candidate-group table.
+- No sequence dataset or completed analysis output is included.
